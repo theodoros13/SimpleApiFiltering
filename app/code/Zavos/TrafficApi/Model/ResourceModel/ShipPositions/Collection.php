@@ -3,8 +3,11 @@
 
 namespace Zavos\TrafficApi\Model\ResourceModel\ShipPositions;
 
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Zavos\TrafficApi\Model\ShipPositions as ModelClass;
+use Zavos\TrafficApi\Model\ResourceModel\ShipPositions as ResourceModelClass;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+class Collection extends AbstractCollection
 {
     protected $_idFieldName = 'id';
     protected $_eventPrefix = 'zavos_ship_positions_collection';
@@ -17,6 +20,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     protected function _construct()
     {
-        $this->_init('Zavos\TrafficApi\Model\ShipPositions', 'Zavos\TrafficApi\Model\ResourceModel\ShipPositions');
+        $this->_init(ModelClass::class, ResourceModelClass::class);
     }
 }

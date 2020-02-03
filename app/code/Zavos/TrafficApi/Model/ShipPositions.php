@@ -22,6 +22,17 @@ class ShipPositions extends AbstractModel implements ShipPositionsInterface
         $this->_init( \Zavos\TrafficApi\Model\ResourceModel\ShipPositions::class );
     }
 
+    public function getIdentities()
+    {
+        return [self::CACHE_TAG . '_' . $this->getId()];
+    }
+
+    public function getDefaultValues()
+    {
+        $values = [];
+
+        return $values;
+    }
 
     public function getId()
     {
