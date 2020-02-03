@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+  <default>
+    <zavos_api>
+      <general>
+        <active>1</active>
+        <cleanup_days>15</cleanup_days>
+        <accept_all_http_methods>1</accept_all_http_methods>
+      </general>
+    </zavos_api>
+  </default>
+</config>
