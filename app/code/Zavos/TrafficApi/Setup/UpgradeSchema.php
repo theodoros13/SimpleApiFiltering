@@ -29,7 +29,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer = $setup;
 
         $installer->startSetup();
-        if (version_compare($context->getVersion(), '1.1.0', '<')) {
+        if (version_compare($context->getVersion(), '1.1.1', '<')) {
             $tableName = ShipPositionsInterface::TABLE_NAME;
 
             /**

@@ -3,7 +3,6 @@
 
 namespace Zavos\TrafficApi\Api\Data;
 
-
 interface UniqueFilterInterface
 {
     const MMSI             = 'mmsi';
@@ -70,23 +69,23 @@ interface UniqueFilterInterface
     public function setMaxLat($data);
 
     /**
-     * @return int
+     * @return string
      */
     public function getFromTimestamp();
 
     /**
-     * @return int
+     * @return string
      */
     public function getToTimestamp();
 
     /**
-     * @param int $data
+     * @param string $data
      * @return $this
      */
     public function setFromTimestamp($data);
 
     /**
-     * @param int $data
+     * @param string $data
      * @return $this
      */
     public function setToTimestamp($data);

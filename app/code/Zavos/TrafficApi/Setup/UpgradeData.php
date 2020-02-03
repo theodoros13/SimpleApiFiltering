@@ -46,7 +46,7 @@ class UpgradeData implements UpgradeDataInterface {
      * @param ModuleContextInterface   $context
      */
     public function upgrade ( ModuleDataSetupInterface $setup, ModuleContextInterface $context ) {
-        if ( version_compare( $context->getVersion(), '1.1.0', '<' ) ) {
+        if ( version_compare( $context->getVersion(), '1.1.1', '<' ) ) {
             $process_data = $this->readJson('ship_positions.json');
             $data = json_decode($process_data, true);
 
