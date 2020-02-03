@@ -3,14 +3,14 @@
 
 namespace Zavos\TrafficApi\Model;
 
-use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\DataObject;
 use Zavos\TrafficApi\Api\Data\UniqueFilterInterface;
 
-class UniqueFilter extends AbstractModel implements UniqueFilterInterface
+class UniqueFilter extends DataObject implements UniqueFilterInterface
 {
     public function getToTimestamp()
     {
-        // TODO: Implement getToTimestamp() method.
+        return $this->getData(self::TO_TIMESTAMP);
     }
 
     public function getMmsi()

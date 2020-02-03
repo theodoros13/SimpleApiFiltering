@@ -3,7 +3,7 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
 
     <!-- Get requested data of the database filtered -->
-    <route url="/V1/ship_positions/filter" method="GET">
+    <route url="/V1/ship_positions/filter" method="PUT">
         <service class="Zavos\TrafficApi\Api\ShipPositionsRepositoryInterface" method="filterData" />
         <resources>
             <resource ref="Zavos_TrafficApi::api" />

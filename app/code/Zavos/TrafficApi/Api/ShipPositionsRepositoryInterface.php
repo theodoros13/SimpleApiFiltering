@@ -9,7 +9,7 @@ interface ShipPositionsRepositoryInterface
 
     /**
      * GET REQUESTED DATA OF THE DATABASE
-     * @param $filters
+     * @param \Zavos\TrafficApi\Api\Data\UniqueFilterInterface[] $filters
      * @return mixed
      */
     public function filterData($filters);

@@ -8,8 +8,8 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
 {
 
     /**
-     * @param $filters
-     * @return mixed|void
+     * @param \Zavos\TrafficApi\Api\Data\UniqueFilterInterface[] $filters
+     * @return boolean
      */
     public function filterData($filters)
     {
@@ -17,7 +17,7 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
         print_r($filters);
         echo '</pre>';
         die;
-        // TODO: Implement filterData() method.
+
     }
 
 }
