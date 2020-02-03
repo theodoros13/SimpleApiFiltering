@@ -8,4 +8,10 @@
     <preference for="Zavos\TrafficApi\Api\ShipPositionsRepositoryInterface"
                 type="Zavos\TrafficApi\Model\ShipPositionsRepository" />
 
+    <preference for="Zavos\TrafficApi\Api\Data\FiltersInterface"
+                type="Zavos\TrafficApi\Model\Filters" />
+
+    <preference for="Zavos\TrafficApi\Api\Data\UniqueFilterInterface"
+                type="Zavos\TrafficApi\Model\UniqueFilter" />
+
 </config>
