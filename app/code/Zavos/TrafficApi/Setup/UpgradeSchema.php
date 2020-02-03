@@ -29,7 +29,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer = $setup;
 
         $installer->startSetup();
-        if (version_compare($context->getVersion(), '1.0.2', '<')) {
+        if (version_compare($context->getVersion(), '1.1.0', '<')) {
             $tableName = ShipPositionsInterface::TABLE_NAME;
 
             /**
@@ -79,15 +79,15 @@ class UpgradeSchema implements UpgradeSchemaInterface
                         )
                         ->addColumn(
                             ShipPositionsInterface::LON,
-                            Table::TYPE_FLOAT,
-                            10,
+                            Table::TYPE_DECIMAL,
+                            [10, 5],
                             ['nullable' => false],
                             'Longitude'
                         )
                         ->addColumn(
                             ShipPositionsInterface::LAT,
-                            Table::TYPE_FLOAT,
-                            10,
+                            Table::TYPE_DECIMAL,
+                            [10, 5],
                             ['nullable' => false],
                             'Latitude'
                         )

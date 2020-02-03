@@ -19,7 +19,6 @@ class ShipPositions extends AbstractDb {
      * @return void
      */
     protected function _construct() {
-        // TODO: Implement _construct() method.
         $this->_init( ShipPositionsInterface::TABLE_NAME, ShipPositionsInterface::ID);
     }
 }

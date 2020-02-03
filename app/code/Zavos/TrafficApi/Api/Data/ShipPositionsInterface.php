@@ -13,13 +13,18 @@ interface ShipPositionsInterface
     const STATUS       = 'status';
     const STATION_ID   = 'stationid';
     const SPEED        = 'speed';
-    const LON          = 'lot';
+    const LON          = 'lon';
     const LAT          = 'lat';
     const COURSE       = 'course';
     const HEADING      = 'heading';
     const ROT          = 'rot';
     const TIMESTAMP    = 'timestamp';
 
+
+    /**
+     * @return int
+     */
+    public function getId();
 
     /**
      * @return int
@@ -66,23 +71,23 @@ interface ShipPositionsInterface
     public function setSpeed($data);
 
     /**
-     * @return int
+     * @return float
      */
     public function getLon();
 
     /**
-     * @param int $data
+     * @param float $data
      * @return $this
      */
     public function setLon($data);
 
     /**
-     * @return int
+     * @return float
      */
     public function getLat();
 
     /**
-     * @param int $data
+     * @param float $data
      * @return $this
      */
     public function setLat($data);

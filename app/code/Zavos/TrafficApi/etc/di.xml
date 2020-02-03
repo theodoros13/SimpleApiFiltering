@@ -5,4 +5,7 @@
     <preference for="Zavos\TrafficApi\Api\Data\ShipPositionsInterface"
                 type="Zavos\TrafficApi\Model\ShipPositions" />
 
+    <preference for="Zavos\TrafficApi\Api\ShipPositionsRepositoryInterface"
+                type="Zavos\TrafficApi\Model\ShipPositionsRepository" />
+
 </config>

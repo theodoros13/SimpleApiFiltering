@@ -2,11 +2,11 @@
 
 namespace Zavos\TrafficApi\Model;
 
+use Magento\Framework\Model\AbstractModel;
 use Zavos\TrafficApi\Api\Data\ShipPositionsInterface;
-use Magento\Framework\DataObject;
 use Zavos\TrafficApi\Model\ResourceModel\ShipPositions as RecourseModel;
 
-class ShipPositions extends DataObject implements ShipPositionsInterface
+class ShipPositions extends AbstractModel implements ShipPositionsInterface
 {
     const CACHE_TAG = ShipPositionsInterface::TABLE_NAME;
 
@@ -19,11 +19,13 @@ class ShipPositions extends DataObject implements ShipPositionsInterface
      */
     protected function _construct() {
 
-        $this->_init( RecourseModel::class );
+        $this->_init( \Zavos\TrafficApi\Model\ResourceModel\ShipPositions::class );
     }
 
-    public function save() {
-        return $this;
+
+    public function getId()
+    {
+        return $this->getData(self::ID);
     }
 
     public function getMmsi()
@@ -44,11 +46,11 @@ class ShipPositions extends DataObject implements ShipPositionsInterface
         return $this->setData(self::STATUS, $data);
     }
 
-    public function getStationId() {
+    public function getStationid() {
         return $this->getData(self::STATION_ID);
     }
 
-    public function setStationId($data) {
+    public function setStationid($data) {
         return $this->setData(self::STATION_ID, $data);
     }
 
