@@ -13,6 +13,10 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
      */
     public function filterData($filters)
     {
+        echo '<pre>';
+        print_r($filters);
+        echo '</pre>';
+        die;
         // TODO: Implement filterData() method.
     }
 
