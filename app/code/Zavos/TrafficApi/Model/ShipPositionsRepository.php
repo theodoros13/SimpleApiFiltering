@@ -92,9 +92,23 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
             asort($fromTimestamp);
             arsort($toTimestamp);
 
+            /**
+             * Attributes to select
+             */
+            $collection->addFieldToSelect('mmsi');
+            $collection->addFieldToSelect('status');
+            $collection->addFieldToSelect('stationid');
+            $collection->addFieldToSelect('speed');
+            $collection->addFieldToSelect('lon');
+            $collection->addFieldToSelect('lat');
+            $collection->addFieldToSelect('course');
+            $collection->addFieldToSelect('heading');
+            $collection->addFieldToSelect('rot');
+            $collection->addFieldToSelect('timestamp');
 
-            $collection->addFieldToSelect('*');
-
+            /**
+             * Attributes to filter the collection
+             */
             if (!empty($mmsi)) {
                 $collection->addFieldToFilter('mmsi', ['in' => [$mmsi]]);
             }
