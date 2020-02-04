@@ -11,6 +11,7 @@ use Magento\Integration\Model\Oauth\TokenFactory;
 use Magento\Webapi\Controller\Soap as PluggedInClass;
 use Zavos\WebApiLogger\Helper\Data;
 use Zavos\WebApiLogger\Model\ApiLogger;
+use Zavos\WebApiLogger\Model\ApiLoggerFactory as Factory;
 
 /**
  * Class AbstractPlugin
@@ -19,197 +20,245 @@ use Zavos\WebApiLogger\Model\ApiLogger;
 abstract class AbstractPlugin implements PluginInterface
 {
 
-	/**
-	 * @var Data
-	 */
-	protected $_dataHelper;
+    /**
+     * @var Data
+     */
+    protected $_dataHelper;
 
-	/**
-	 * @var ApiLogger
-	 */
-	protected $_apiLogger;
+    /**
+     * @var ApiLogger
+     */
+    protected $_apiLogger;
 
-	/**
-	 * @var Http
-	 */
-	protected $_httpRequest;
+    /**
+     * @var Http
+     */
+    protected $_httpRequest;
 
-	/**
-	 * @var TokenFactory
-	 */
-	private $_tokenFactory;
+    /**
+     * @var TokenFactory
+     */
+    private $_tokenFactory;
 
-	/**
-	 * @var IntegrationFactory
-	 */
-	private $_integrationFactory;
+    /**
+     * @var IntegrationFactory
+     */
+    private $_integrationFactory;
 
-	/**
-	 * AbstractPlugin constructor.
-	 *
-	 * @param Data               $data
-	 * @param ApiLogger          $apiLogger
-	 * @param Http               $httpRequest
-	 * @param TokenFactory       $tokenFactory
-	 * @param IntegrationFactory $integrationFactory
-	 */
-	public function __construct(
-		Data $data,
-		ApiLogger $apiLogger,
-		Http $httpRequest,
-		TokenFactory $tokenFactory,
-		IntegrationFactory $integrationFactory
-	) {
-		$this->_dataHelper         = $data;
-		$this->_apiLogger          = $apiLogger;
-		$this->_httpRequest        = $httpRequest;
-		$this->_tokenFactory       = $tokenFactory;
-		$this->_integrationFactory = $integrationFactory;
-	}
+    /**
+     * @var Factory
+     */
+    private $_apiLoggerFactory;
 
-	/**
-	 * @param $content
-	 *
-	 * @return string
-	 */
-	protected function convertContent($content)
-	{
-		switch ($this->_httpRequest->getHeader("Content-Type")) {
-			case "application/json":
-				return json_encode(json_decode($content, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-			case "application/xml":
-			case "text/xml":
-			case "text/html":
-			case "application/javascript":
-			case "text/plain":
-			default:
-				return $content;
-		}
-	}
+    /**
+     * AbstractPlugin constructor.
+     *
+     * @param Data               $data
+     * @param ApiLogger          $apiLogger
+     * @param Http               $httpRequest
+     * @param TokenFactory       $tokenFactory
+     * @param IntegrationFactory $integrationFactory
+     */
+    public function __construct(
+        Data $data,
+        ApiLogger $apiLogger,
+        Http $httpRequest,
+        TokenFactory $tokenFactory,
+        IntegrationFactory $integrationFactory,
+        Factory $factory
+    ) {
+        $this->_dataHelper         = $data;
+        $this->_apiLogger          = $apiLogger;
+        $this->_httpRequest        = $httpRequest;
+        $this->_tokenFactory       = $tokenFactory;
+        $this->_integrationFactory = $integrationFactory;
+        $this->_apiLoggerFactory   = $factory;
+    }
 
-	/**
-	 * @return bool
-	 */
-	protected function isApiMethodAccepted()
-	{
-		if ($this->_dataHelper->getApiConfig(Data::CONFIG_ACCEPT_ALL_HTTP_METHODS)) {
-			return true;
-		}
-		$selected = $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_HTTP_METHODS);
+    /**
+     * @param $content
+     *
+     * @return string
+     */
+    protected function convertContent($content)
+    {
+        switch ($this->_httpRequest->getHeader("Content-Type")) {
+            case "application/json":
+                return json_encode(json_decode($content, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            case "application/xml":
+            case "text/xml":
+            case "text/html":
+            case "application/javascript":
+            case "text/plain":
+            default:
+                return $content;
+        }
+    }
 
-		return isset($selected[strtoupper($this->_httpRequest->getMethod())]);
-	}
+    /**
+     * @return bool
+     */
+    protected function isApiMethodAccepted()
+    {
+        if ($this->_dataHelper->getApiConfig(Data::CONFIG_ACCEPT_ALL_HTTP_METHODS)) {
+            return true;
+        }
+        $selected = $this->_dataHelper->getApiConfig(Data::CONFIG_SELECTED_HTTP_METHODS);
 
-	/**
-	 * @return string
-	 */
-	protected function getIntegratedUser()
-	{
-		if ($accessToken = $this->getAccessToken()) {
-			$token = $this->_tokenFactory->create()->loadByToken($accessToken);
-			if ($consumerId = $token->getConsumerId()) {
-				$integration = $this->_integrationFactory->create()->loadByConsumerId($consumerId);
+        return isset($selected[strtoupper($this->_httpRequest->getMethod())]);
+    }
 
-				return $integration->getName();
-			}
-		}
+    /**
+     * @return string
+     */
+    protected function getIntegratedUser()
+    {
+        if ($accessToken = $this->getAccessToken()) {
+            $token = $this->_tokenFactory->create()->loadByToken($accessToken);
+            if ($consumerId = $token->getConsumerId()) {
+                $integration = $this->_integrationFactory->create()->loadByConsumerId($consumerId);
 
-		return "anonymous";
-	}
+                return $integration->getName();
+            }
+        }
 
-	/**
-	 * @return mixed|null
-	 */
-	private function getAccessToken()
-	{
-		$accessToken = $this->_httpRequest->getParam("oauth_token", false);
-		if (!$accessToken) {
-			$accessToken = $this->getHeaderToken();
-		}
+        return "anonymous";
+    }
 
-		return $accessToken;
-	}
+    /**
+     * @return mixed|null
+     */
+    private function getAccessToken()
+    {
+        $accessToken = $this->_httpRequest->getParam("oauth_token", false);
+        if (!$accessToken) {
+            $accessToken = $this->getHeaderToken();
+        }
 
-	/**
-	 * @return string|null
-	 */
-	private function getAuthorizationHeader()
-	{
-		$headers = null;
-		if (isset($_SERVER['Authorization'])) {
-			$headers = trim($_SERVER["Authorization"]);
-		} elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-			$headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
-		} elseif (function_exists('apache_request_headers')) {
-			$requestHeaders = apache_request_headers();
-			// Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
-			$requestHeaders =
-				array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-			//print_r($requestHeaders);
-			if (isset($requestHeaders['Authorization'])) {
-				$headers = trim($requestHeaders['Authorization']);
-			}
-		}
+        return $accessToken;
+    }
 
-		return $headers;
-	}
+    /**
+     * @return string|null
+     */
+    private function getAuthorizationHeader()
+    {
+        $headers = null;
+        if (isset($_SERVER['Authorization'])) {
+            $headers = trim($_SERVER["Authorization"]);
+        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
+        } elseif (function_exists('apache_request_headers')) {
+            $requestHeaders = apache_request_headers();
+            // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care about capitalization for Authorization)
+            $requestHeaders =
+                array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+            //print_r($requestHeaders);
+            if (isset($requestHeaders['Authorization'])) {
+                $headers = trim($requestHeaders['Authorization']);
+            }
+        }
 
-	/**
-	 * get access token from header
-	 * */
-	private function getHeaderToken()
-	{
-		$headers = $this->getAuthorizationHeader();
-		// HEADER: Get the access token from the header
-		if (!empty($headers)) {
-			if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-				return $matches[1];
-			} elseif (preg_match('/OAuth\s(\S+)/', $headers, $matches)) {
-				foreach (explode(",", $matches[1]) as $value) {
-					list($key, $data) = explode("=", $value);
-					if ($key == "oauth_token") {
-						return str_ireplace(["\"", "'"], "", $data);
-					}
-				}
-			}
-		}
+        return $headers;
+    }
 
-		return null;
-	}
+    /**
+     * get access token from header
+     * */
+    private function getHeaderToken()
+    {
+        $headers = $this->getAuthorizationHeader();
+        // HEADER: Get the access token from the header
+        if (!empty($headers)) {
+            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+                return $matches[1];
+            } elseif (preg_match('/OAuth\s(\S+)/', $headers, $matches)) {
+                foreach (explode(",", $matches[1]) as $value) {
+                    list($key, $data) = explode("=", $value);
+                    if ($key == "oauth_token") {
+                        return str_ireplace(["\"", "'"], "", $data);
+                    }
+                }
+            }
+        }
 
-	/**
-	 * @param PluggedInClass   $subject
-	 * @param RequestInterface $request
-	 * @return null
-	 * @throws \Exception
-	 */
-	public function beforeDispatch(FrontControllerInterface $subject, RequestInterface $request)
-	{
-		if ($this->_dataHelper->getApiConfig("active") && $this->isApiMethodAccepted()) {
-			$this->_apiLogger->setApiType($this->getApiType())
-				->setRequestData($this->convertContent($this->_httpRequest->getContent()))
-				->setMethodRequest($this->_httpRequest->getMethod())
-				->setUrlRequest(urldecode($this->_httpRequest->getPathInfo()))
-				->setApiUser($this->getIntegratedUser())
-				->save();
-		}
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * @param FrontControllerInterface $subject
-	 * @param Response                 $response
-	 * @return Response
-	 * @throws \Exception
-	 */
-	public function afterDispatch(FrontControllerInterface $subject, Response $response)
-	{
-		if ($this->_dataHelper->getApiConfig("active")
-			&& $this->isApiMethodAccepted()
-			&& $this->_apiLogger
-		) {
-			$this->_apiLogger->setResponseData($this->convertContent($response->getContent()))->save();
-		}
-		return $response;
-	}
+    /**
+     * @param PluggedInClass   $subject
+     * @param RequestInterface $request
+     * @return null
+     * @throws \Exception
+     */
+    public function beforeDispatch(FrontControllerInterface $subject, RequestInterface $request)
+    {
+        $canSendRequest = true;
+        $canSendRequest = $this->_checkNoOfRequests($this->getIntegratedUser());
+
+        if ($canSendRequest) {
+            if ($this->_dataHelper->getApiConfig("active") && $this->isApiMethodAccepted()) {
+                $this->_apiLogger->setApiType($this->getApiType())
+                    ->setRequestData($this->convertContent($this->_httpRequest->getContent()))
+                    ->setMethodRequest($this->_httpRequest->getMethod())
+                    ->setUrlRequest(urldecode($this->_httpRequest->getPathInfo()))
+                    ->setApiUser($this->getIntegratedUser())
+                    ->save();
+            }
+
+            return null;
+        }
+
+        die('Sorry, only 10 requests/hour per user are allowed.');
+    }
+
+    /**
+     * @param $user
+     * @return boolean
+     */
+    private function _checkNoOfRequests($user) {
+
+        $factory = $this->_apiLoggerFactory->create();
+        $collection = $factory->getCollection();
+        $collection->addFieldToSelect('id');
+        $collection->addFieldToSelect('api_user');
+        $collection->addFieldToSelect('created_at');
+        $collection->addFieldToFilter('api_user',['like' => $user]);
+        $collection->addOrder('id','DESC');
+        $collection->load();
+        $count = $collection->count();
+        $data = $collection->getData();
+
+
+        if (($count  > 10) ) {
+            $last_hour_request_check = $data[9]['created_at'];
+            $last_hour_request_check = \DateTime::createFromFormat("Y-m-d G:i:s", $last_hour_request_check);
+            $last_hour = date("Y-m-d G:i:s", strtotime('now'));
+            $last_hour = \DateTime::createFromFormat("Y-m-d G:i:s", $last_hour);
+            $diff = date_diff($last_hour,$last_hour_request_check);
+
+            if ( $diff->h < 1 ) {
+                return 0;
+            }
+        }
+
+        return 1;
+    }
+
+    /**
+     * @param FrontControllerInterface $subject
+     * @param Response                 $response
+     * @return Response
+     * @throws \Exception
+     */
+    public function afterDispatch(FrontControllerInterface $subject, Response $response)
+    {
+        if ($this->_dataHelper->getApiConfig("active")
+            && $this->isApiMethodAccepted()
+            && $this->_apiLogger
+        ) {
+            $this->_apiLogger->setResponseData($this->convertContent($response->getContent()))->save();
+        }
+        return $response;
+    }
 }
