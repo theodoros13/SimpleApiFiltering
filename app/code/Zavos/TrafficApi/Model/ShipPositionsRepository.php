@@ -92,6 +92,7 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
             asort($fromTimestamp);
             arsort($toTimestamp);
 
+
             $collection->addFieldToSelect('*');
 
             if (!empty($mmsi)) {
@@ -110,7 +111,8 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
                 $collection->addFieldToFilter('lat', ['lt' => [current($maxLat)]]);
             }
             if (!empty($fromTimestamp)) {
-                $collection->addFieldToFilter('timestamp',['from' => current($fromTimestamp)]);
+                $from = current($fromTimestamp);
+                $collection->addFieldToFilter('timestamp',['from' => $from->format('Y-m-d H:i:s')]);
             }
             if (!empty($toTimestamp)) {
                 $collection->addFieldToFilter('timestamp',['to' => current($toTimestamp)]);
