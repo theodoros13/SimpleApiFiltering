@@ -115,7 +115,8 @@ class ShipPositionsRepository implements ShipPositionsRepositoryInterface
                 $collection->addFieldToFilter('timestamp',['from' => $from->format('Y-m-d H:i:s')]);
             }
             if (!empty($toTimestamp)) {
-                $collection->addFieldToFilter('timestamp',['to' => current($toTimestamp)]);
+                $to = current($toTimestamp);
+                $collection->addFieldToFilter('timestamp',['to' => $to->format('Y-m-d H:i:s')]);
             }
 
             $result = $collection->load();

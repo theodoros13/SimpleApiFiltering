@@ -67,6 +67,17 @@ HOW DOES IT WORK:
         	]
         }
         
+        ex.6
+        {
+        	"filters": [
+        		{
+        			"from_timestamp": "2013-07-01 10:23:00",
+        			"to_timestamp": "2013-07-01 18:23:00"
+        		}
+        		
+        	]
+        }
+        
         And so on...
 
 API CALLS have been tested through postman.
